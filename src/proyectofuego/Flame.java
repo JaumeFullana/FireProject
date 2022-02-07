@@ -41,6 +41,7 @@ public class Flame extends BufferedImage implements Runnable{
     private int coolingPercentage;
     private int fps=200;
     private int skip_ticks=1000/fps;
+    private boolean convolateFire;
     
     public Flame(int width, int height, int imageType, MyTask myTask) {
         super(width, height, imageType);
@@ -58,10 +59,17 @@ public class Flame extends BufferedImage implements Runnable{
         this.pondSouthWest=2.1;
         
         this.pondDivisor=695;
+        this.convolateFire=false;
     }
+    
+    
     
     public int[][] getMapaTemperatura() {
         return mapaTemperatura;
+    }
+
+    public void setConvolateFire(boolean convolateFire) {
+        this.convolateFire = convolateFire;
     }
     
     public void setCoolingFromCol(int coolingFromCol) {
@@ -160,6 +168,12 @@ public class Flame extends BufferedImage implements Runnable{
         this.sparks2Activated = sparks2Activated;
     }
     
+    public void createCoolingPoint(int percentage, Random r, int i, int j) {
+        if (percentage>=r.nextInt(10)+1){
+            this.mapaTemperatura2[i][j]=0;
+        }
+    }
+    
     /**
      * Metodo que asigna puntos frios, el valor 0, a algunos indices de la
      * matriz MapaTemperatura2. Estos indices pueden ser aleatorios i dependen 
@@ -170,13 +184,11 @@ public class Flame extends BufferedImage implements Runnable{
      * @param fromRow desde la fila que se recorre el mapaTemperatura
      * @param percentage porcentage de que se asigne el valor 0 en cada indice
      */
-    private void createCool(double fromCol, double toCol, double fromRow,int percentage){
+    private void createCoolingPoints(double fromCol, double toCol, double fromRow,int percentage){
         Random r=new Random();
         for (int i=(int)fromRow; i<this.mapaTemperatura2.length;i++){
             for (int j=(int)fromCol; j<toCol;j++){
-                if (percentage>=r.nextInt(10)+1){
-                    this.mapaTemperatura2[i][j]=0;
-                }
+                createCoolingPoint(percentage, r, i, j);
             }
         }
     }
@@ -196,6 +208,13 @@ public class Flame extends BufferedImage implements Runnable{
         }
     }
     
+    
+    public void CreateSpark(int percentage, Random r, int i, int j) {
+        if (percentage>=r.nextInt(10)+1){
+            this.mapaTemperatura2[i][j]=255;
+        }
+    }
+    
     /**
      * Metodo que asigna puntos calientes, el valor 255, a algunos indices de la
      * matriz MapaTemperatura2. Estos indices pueden ser aleatorios i dependen 
@@ -210,9 +229,7 @@ public class Flame extends BufferedImage implements Runnable{
         Random r=new Random();
         for (int i=(int)fromRow; i<this.mapaTemperatura2.length;i++){
             for (int j=sparksFromCol; j<sparksToCol;j++){
-                if (percentage>=r.nextInt(10)+1){
-                    this.mapaTemperatura2[i][j]=255;
-                }
+                CreateSpark(percentage, r, i, j);
             }
         }
     }
@@ -260,11 +277,17 @@ public class Flame extends BufferedImage implements Runnable{
      * mapaTemperatura2 al mapaTemperatura.
      */
     public void flameEvolve(){
-        this.createSparks(this.sparksFromCol,this.sparksToCol,this.mapaTemperatura2.length-1,this.sparksPercentage);
-        if (sparks2Activated){
-            this.createSparks(this.sparksFromCol2,this.sparksToCol2,this.mapaTemperatura2.length-1,this.sparksPercentage2);
+        if (convolateFire){
+            this.searchSparkPositions();
+            //this.searchCoolingPositions();
         }
-        this.createCool(this.coolingFromCol,this.coolingToCol,this.mapaTemperatura2.length-1,this.coolingPercentage);
+        else {
+            this.createSparks(this.sparksFromCol,this.sparksToCol,this.mapaTemperatura2.length-1,this.sparksPercentage);
+            if (sparks2Activated){
+                this.createSparks(this.sparksFromCol2,this.sparksToCol2,this.mapaTemperatura2.length-1,this.sparksPercentage2);
+            }
+        }
+        this.createCoolingPoints(this.coolingFromCol,this.coolingToCol,this.mapaTemperatura2.length-1,this.coolingPercentage);
         //for (int i=1; i<this.getMapaTemperatura().length-1;i++){
             //for (int j=1; j<this.getMapaTemperatura()[i].length-1;j++){
         for (int i=this.getMapaTemperatura().length-2; i>0;i--){
@@ -295,13 +318,27 @@ public class Flame extends BufferedImage implements Runnable{
     @Override
     public void run() {
         while(running){
-            if(this.getMapaTemperatura()!=null){
-                try {
-                    Thread.sleep(skip_ticks);
-                } catch (InterruptedException ex) {
-                    System.out.println(ex.getMessage());
-                }
+            if(this.getMapaTemperatura()!=null){ 
                 this.flameEvolve();
+            }
+            try {
+                Thread.sleep(skip_ticks);
+            } catch (InterruptedException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+    }
+    
+    public void searchSparkPositions(){
+        Random r=new Random();
+        for (int i=this.myTask.getView().getConvolutedImage().getHeight()-2; i>0;i--){
+            for (int j=this.myTask.getView().getConvolutedImage().getWidth()-2; j>0;j--){
+                int pixelColor=this.myTask.getView().getConvolutedImage().getRGB(j, i);
+                int lum = (77*((pixelColor>>16)&255) + 150*((pixelColor>>8)&255) + 29*((pixelColor)&255))>>8;
+                if (lum>20){
+                    this.CreateSpark(sparksPercentage, r, i, j);
+                    this.createCoolingPoint(coolingPercentage, r, i, j);
+                }
             }
         }
     }
@@ -314,14 +351,14 @@ public class Flame extends BufferedImage implements Runnable{
         //fe if que cuigui valors, sino aixo
         FlamePalette palette=new FlamePalette();
         palette.addTargetColor(new TargetColor(0,new Color(0,0,0,0)));
-        //palette.addTargetColor(new TargetColor(35,new Color(0,0,0,0)));
-        palette.addTargetColor(new TargetColor(55,new Color(255,0,0,100)));
-        palette.addTargetColor(new TargetColor(60,new Color(210,230,0,100)));
-        palette.addTargetColor(new TargetColor(65,new Color(255,0,0,200)));
-        palette.addTargetColor(new TargetColor(80,new Color(255,100,0,200)));
-        palette.addTargetColor(new TargetColor(140,new Color(255,230,0,200)));
-        //palette.addTargetColor(new TargetColor(210,Color.WHITE));
-        palette.addTargetColor(new TargetColor(255,Color.WHITE));
+        palette.addTargetColor(new TargetColor(30,new Color(255,0,0,100)));
+        palette.addTargetColor(new TargetColor(45,new Color(255,90,0,200)));
+        palette.addTargetColor(new TargetColor(80,new Color(255,160,0,200)));
+        palette.addTargetColor(new TargetColor(100,new Color(255,220,0,200)));
+        palette.addTargetColor(new TargetColor(130,new Color(255,250,0,200)));
+        palette.addTargetColor(new TargetColor(230,new Color(255,250,255,200)));
+        palette.addTargetColor(new TargetColor(254,new Color(255,250,255,200)));
+        palette.addTargetColor(new TargetColor(255,new Color(255,255,255,255)));
         this.myTask.setFlamePalette(palette);
     }
     

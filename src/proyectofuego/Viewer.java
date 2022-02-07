@@ -2,8 +2,8 @@ package proyectofuego;
 
 import java.awt.Canvas;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
@@ -18,17 +18,32 @@ public class Viewer extends Canvas implements Runnable{
     private boolean running;
     private int fps;
     private int skip_ticks;
-    private Image defaultBackground;
-    private Image chosenBackground;
+    private BufferedImage defaultBackground;
+    private BufferedImage chosenBackground;
+    private BufferedImage convolutedImage;
+    boolean usingConvulatedImage;
+    private int altura;
+    private int amplada;
+    private boolean stoped;
     
     public Viewer() {
     }
 
-    public Viewer(Flame fire, JFrame frame) {
-        this.fire = fire;
+    public Viewer(JFrame frame) {
         this.frame = frame;
         this.getActualSize();
-        this.defaultBackground=new ImageIcon(this.getClass().getResource("Images\\fondoNegro.png")).getImage();
+        ImageIcon iconBackground=new ImageIcon(this.getClass().getResource("Images\\fondoNegro.png"));
+        this.defaultBackground=new BufferedImage(iconBackground.getIconWidth(),
+                iconBackground.getIconHeight(),BufferedImage.TYPE_INT_RGB);
+        this.usingConvulatedImage=false;
+    }
+
+    public int getAltura() {
+        return altura;
+    }
+
+    public int getAmplada() {
+        return amplada;
     }
     
     public Flame getFire() {
@@ -38,14 +53,40 @@ public class Viewer extends Canvas implements Runnable{
     public JFrame getFrame() {
         return frame;
     }
+
+    public BufferedImage getChosenBackground() {
+        return chosenBackground;
+    }
+
+    public BufferedImage getConvolutedImage() {
+        return convolutedImage;
+    }
+
+    public void setConvolutedImage(BufferedImage convolutedImage) {
+        this.convolutedImage = convolutedImage;
+    }
     
-    public void setChosenBackground(Image chosenBackground) {
+    public void setChosenBackground(BufferedImage chosenBackground) {
         this.chosenBackground = chosenBackground;
+    }
+
+    public void setStoped(boolean stoped) {
+        this.stoped = stoped;
+    }
+
+    public void setFire(Flame fire) {
+        this.fire = fire;
+        this.fire.setMapaTemperatura(new int[altura][amplada]);
+        this.fire.setMapaTemperatura2(new int[altura][amplada]);
     }
 
     public void setRunning(boolean running) {
         this.running = running;
     }
+
+    public void setUsingConvulatedImage(boolean usingConvulatedImage) {
+        this.usingConvulatedImage = usingConvulatedImage;
+    }    
     
     /**
      * Metodo que mientras el atributo running sea true, va llamando al metodo 
@@ -55,12 +96,12 @@ public class Viewer extends Canvas implements Runnable{
     private void chargeBackground(){
         while(running){
             if(this.fire.getMapaTemperatura()!=null){
-                try {
-                    Thread.sleep(skip_ticks);
-                } catch (InterruptedException ex) {
-                    System.out.println(ex.getMessage());
-                }
                 this.paintFire();
+            }
+            try {
+                Thread.sleep(skip_ticks);
+            } catch (InterruptedException ex) {
+                System.out.println(ex.getMessage());
             }
         }
     }    
@@ -70,10 +111,8 @@ public class Viewer extends Canvas implements Runnable{
      * tamaño a las matrices del mapaTemperatura.
      */
     private void getActualSize(){
-        int altura=this.getFrame().getHeight();
-        int amplada=this.getFrame().getWidth();
-        this.fire.setMapaTemperatura(new int[altura][amplada]);
-        this.fire.setMapaTemperatura2(new int[altura][amplada]);
+        altura=this.getFrame().getHeight();
+        amplada=this.getFrame().getWidth();
     }   
     
     /**
@@ -92,12 +131,40 @@ public class Viewer extends Canvas implements Runnable{
         } 
         else {
             Graphics g=bs.getDrawGraphics();
+            //fondo gran
             if (chosenBackground==null){
-                g.drawImage(this.defaultBackground, 0,0, this.getWidth(), this.getHeight(), null);
-            } else {
-                g.drawImage(this.chosenBackground, 0,0, this.getWidth(), this.getHeight(), null);
+                g.drawImage(this.defaultBackground, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
+            } 
+            else {
+                if (this.convolutedImage!=null && this.usingConvulatedImage){
+                    g.drawImage(this.convolutedImage, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
+                }
+                else {
+                    g.drawImage(this.chosenBackground, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
+                }
             }
-            g.drawImage(this.fire, 0,0, this.getWidth(), this.getHeight(), null);
+            //fondo petit
+            if (chosenBackground==null){
+                g.drawImage(this.defaultBackground, 0,0, (int)(this.getWidth()*0.33), (int)(this.getHeight()*0.25), null);
+            } 
+            else {
+                g.drawImage(this.chosenBackground, 0,0, (int)(this.getWidth()*0.33), (int)(this.getHeight()*0.25), null);
+            }
+            //fondo convolucionat
+            if (this.convolutedImage==null){
+                g.drawImage(this.defaultBackground, (int)(this.getWidth()*0.33),0, (int)(this.getWidth()*0.33), (int)(this.getHeight()*0.25), null);
+            } 
+            else {
+                g.drawImage(this.convolutedImage, (int)(this.getWidth()*0.33),0, (int)(this.getWidth()*0.33), (int)(this.getHeight()*0.25), null);
+            }
+            //fondo foc totsol
+            g.drawImage(this.defaultBackground, (int)(this.getWidth()*0.65),0, (int)(this.getWidth()*0.35), (int)(this.getHeight()*0.25), null);
+            
+            if (!stoped){
+                g.drawImage(this.fire, (int)(this.getWidth()*0.66),0, (int)(this.getWidth()*0.34), (int)(this.getHeight()*0.25), null);
+                g.drawImage(this.fire, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
+            }
+            
             g.dispose();
             bs.show();
         }

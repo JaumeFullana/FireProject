@@ -3,14 +3,15 @@ package proyectofuego;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -31,7 +32,7 @@ import javax.swing.table.TableCellRenderer;
  *
  * @author Jaume
  */
-public class ControlPanel extends JPanel implements ActionListener, ChangeListener{
+public class FireControlPanel extends JPanel implements ActionListener, ChangeListener{
     
     private MyTask myTask;
     
@@ -88,7 +89,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
     private JButton botonSeleccionarPaleta;
     private JButton botonBorrarPaleta;
 
-    public ControlPanel() {
+    public FireControlPanel() {
         this.initComponents();
     }
 
@@ -97,7 +98,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
     }
     
     /**
-     * Instancia y añade los componentes al ControlPanel
+     * Instancia y añade los componentes al FireControlPanel
      */
     private void initComponents(){
         this.setLayout(new GridBagLayout());
@@ -106,38 +107,53 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         
         this.coloresPaleta=new JLabel("PALETTE COLORS");
         this.coloresPaleta.setFont(new Font("Tahoma",Font.BOLD,20));
-        this.titulo=new JLabel("FIRE JAVA PROJECT");
+        this.coloresPaleta.setForeground(Color.white);
+        this.titulo=new JLabel("FIRE CONTROL PANEL");
         this.titulo.setFont(new Font("Tahoma",Font.BOLD,20));
+        this.titulo.setForeground(Color.white);
         this.perdidaCalorica=new JLabel("HEAT LOSS");
         this.perdidaCalorica.setFont(new Font("Tahoma",Font.BOLD,20));
+        this.perdidaCalorica.setForeground(Color.white);
         this.targetColors=new JLabel("TARGET COLORS");
         this.targetColors.setFont(new Font("Tahoma",Font.BOLD,20));
+        this.targetColors.setForeground(Color.white);
         this.labelFramesFire=new JLabel("Fire Frames:");
         this.labelFramesFire.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelFramesFire.setForeground(Color.white);
         this.labelFramesCanvas=new JLabel("Canvas Frames:");
         this.labelFramesCanvas.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelFramesCanvas.setForeground(Color.white);
         this.labelSparks=new JLabel("Sparks: ");
         this.labelSparks.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelSparks.setForeground(Color.white);
         this.labelCoolingPoints=new JLabel("Cooling Points: ");
         this.labelCoolingPoints.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelCoolingPoints.setForeground(Color.white);
         this.labelFondo=new JLabel("BACKGROUND:");
         this.labelFondo.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelFondo.setForeground(Color.white);
         this.labelPonderacio=new JLabel("HEAT PONDERATION:");
         this.labelPonderacio.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelPonderacio.setForeground(Color.white);
         this.labelDivisorPonderacio=new JLabel("Divisor ponderacio:");
         this.labelDivisorPonderacio.setFont(new Font("Tahoma",Font.BOLD,14));
+        this.labelDivisorPonderacio.setForeground(Color.white);
         this.labelDesde=new JLabel("Desde");
         this.labelDesde.setFont(new Font("Tahoma",Font.BOLD,14));
+        this.labelDesde.setForeground(Color.white);
         this.labelHasta=new JLabel(" Hasta");
         this.labelHasta.setFont(new Font("Tahoma",Font.BOLD,14));
+        this.labelHasta.setForeground(Color.white);
         this.labelPorcentage=new JLabel("%   ");
         this.labelPorcentage.setFont(new Font("Tahoma",Font.BOLD,14));
+        this.labelPorcentage.setForeground(Color.white);
         
         this.sliderFramesFire=new JSlider(30,300,200);
         this.sliderFramesFire.setMinorTickSpacing(15);
         this.sliderFramesFire.setMajorTickSpacing(30);
         this.sliderFramesFire.setPaintTicks(true);
         this.sliderFramesFire.setPaintLabels(true);
+        this.sliderFramesFire.setForeground(Color.white);
         this.sliderFramesFire.addChangeListener(this);
         
         this.sliderFramesCanvas=new JSlider(30,300,200);
@@ -145,6 +161,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.sliderFramesCanvas.setMajorTickSpacing(30);
         this.sliderFramesCanvas.setPaintTicks(true);
         this.sliderFramesCanvas.setPaintLabels(true);
+        this.sliderFramesCanvas.setForeground(Color.white);
         this.sliderFramesCanvas.addChangeListener(this);
         
         this.sliderRefresco=new JSlider(10,30,12);
@@ -152,6 +169,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.sliderRefresco.setMajorTickSpacing(5);
         this.sliderRefresco.setPaintTicks(true);
         this.sliderRefresco.setPaintLabels(true);
+        this.sliderRefresco.setForeground(Color.white);
         this.sliderRefresco.addChangeListener(this);
         
         SpinnerModel modelDivisorPonderacio=new SpinnerNumberModel(695,0,1000,1);
@@ -170,6 +188,8 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         SpinnerModel modelSparksPercentage2=new SpinnerNumberModel(0,0,10,1);
         
         this.checkBoxSparks2=new JCheckBox("Activate Sparks 2");
+        this.checkBoxSparks2.setForeground(Color.white);
+        this.checkBoxSparks2.setFont(new Font("Tahoma",Font.BOLD,12));
         this.checkBoxSparks2.addItemListener(new ItemListener(){
             public void itemStateChanged(ItemEvent e) {                 
                 if(checkBoxSparks2.isSelected()){
@@ -267,7 +287,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         c.gridx=1;
         c.gridy=1;
         this.add(this.pause,c);
-        c.insets=new Insets(5,0,10,10);
+        c.insets=new Insets(5,0,10,20);
         c.gridx=2;
         c.gridy=1;
         this.add(this.stop,c);
@@ -275,7 +295,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         c.gridx=0;
         c.gridy=2;
         this.add(this.labelFondo,c);
-        c.insets=new Insets(5,0,10,10);
+        c.insets=new Insets(5,0,10,20);
         c.gridx=1;
         c.gridy=2;
         c.gridwidth=2;
@@ -290,7 +310,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(this.labelFramesFire,c);
         c.gridx=1;
         c.gridy=3;
-        c.insets=new Insets(0,0,0,10);
+        c.insets=new Insets(0,0,0,20);
         c.gridwidth=3;
         c.anchor=GridBagConstraints.NORTH;
         c.fill=GridBagConstraints.BOTH;
@@ -303,7 +323,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(this.labelFramesCanvas,c);
         c.gridx=1;
         c.gridy=4;
-         c.insets=new Insets(0,0,0,10);
+         c.insets=new Insets(0,0,0,20);
         c.gridwidth=3;
         c.anchor=GridBagConstraints.NORTH;
         c.fill=GridBagConstraints.BOTH;
@@ -330,7 +350,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(this.botonGuardarPaleta,c);
         c.gridx=2;
         c.gridy=6;
-        c.insets=new Insets(5,0,5,10);
+        c.insets=new Insets(5,0,5,20);
         this.add(this.botonBorrarColores,c);
         this.placeTablaColores();
         c.gridwidth=1;
@@ -346,7 +366,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(this.botonSeleccionarPaleta,c);
         c.gridx=2;
         c.gridy=9;
-        c.insets=new Insets(5,0,10,10);
+        c.insets=new Insets(5,0,10,20);
         this.add(this.botonBorrarPaleta,c);
         c.gridx=0;
         c.gridy=10;
@@ -359,7 +379,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         c.gridx=0;
         c.gridy=11;
         c.gridwidth=4;
-        c.insets=new Insets(0,10,0,10);
+        c.insets=new Insets(0,10,0,20);
         c.anchor=GridBagConstraints.NORTH;
         c.fill=GridBagConstraints.BOTH;
         this.add(this.sliderRefresco,c);
@@ -377,7 +397,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(labelHasta,c);
         c.gridx=2;
         c.gridy=12;
-        c.insets=new Insets(0,0,0,10);
+        c.insets=new Insets(0,0,0,20);
         c.anchor=GridBagConstraints.EAST;
         c.fill=GridBagConstraints.NONE;
         this.add(labelPorcentage,c);
@@ -402,7 +422,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(spinnerSparksTo,c);
         c.gridx=2;
         c.gridy=13;
-        c.insets=new Insets(0,0,10,10);
+        c.insets=new Insets(0,0,10,20);
         c.anchor=GridBagConstraints.EAST;
         c.fill=GridBagConstraints.NONE;
         this.add(spinnerSparksPercentage,c); 
@@ -426,7 +446,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(spinnerSparksTo2,c);
         c.gridx=2;
         c.gridy=14;
-        c.insets=new Insets(0,0,10,10);
+        c.insets=new Insets(0,0,10,20);
         c.anchor=GridBagConstraints.EAST;
         c.fill=GridBagConstraints.NONE;
         this.add(spinnerSparksPercentage2,c); 
@@ -450,7 +470,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.add(this.spinnerCoolingTo,c);
         c.gridx=2;
         c.gridy=15;
-        c.insets=new Insets(0,0,10,10);
+        c.insets=new Insets(0,0,10,20);
         c.anchor=GridBagConstraints.EAST;
         c.fill=GridBagConstraints.NONE;
         this.add(this.spinnerCoolingPercentage,c);
@@ -460,7 +480,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         c.gridy=16;
         c.anchor=GridBagConstraints.CENTER;
         c.fill=GridBagConstraints.HORIZONTAL;
-        c.insets=new Insets(0,5,0,10);
+        c.insets=new Insets(0,5,0,20);
         this.add(this.labelPonderacio,c);
         c.weighty=0.4;
         c.gridwidth=1;
@@ -492,7 +512,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         c.gridy=18;
         c.anchor=GridBagConstraints.CENTER;
         c.fill=GridBagConstraints.BOTH;
-        c.insets=new Insets(5,10,0,10);
+        c.insets=new Insets(5,10,0,20);
         this.add(this.botoActualitzar,c);
     }
     
@@ -523,7 +543,11 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
                 break;
                 
             case("GUARDAR PALETA"):
-                this.savePalette();
+                if (this.tablaColores.isEditing()){
+                    JOptionPane.showMessageDialog(myTask,"You have to deselect the cell of the palette colors table","Warning Message",JOptionPane.WARNING_MESSAGE);
+                } else {
+                    this.savePalette();
+                }
                 break;
 
             case("BORRAR COLORES"):
@@ -539,9 +563,13 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
                 break;
                 
             case ("ACTUALITZAR VALORES"):
-                this.addSparksValues();
-                this.addCoolingPointsValues();
-                this.addPonderationValues();
+                if (this.tablaPonderacion.isEditing()){
+                    JOptionPane.showMessageDialog(myTask,"You have to deselect the cell of the ponderation table","Warning Message",JOptionPane.WARNING_MESSAGE);
+                } else{
+                    this.addSparksValues();
+                    this.addCoolingPointsValues();
+                    this.addPonderationValues();
+                }
                 break;
                 
             case ("CAMBIAR FONDO"):
@@ -577,11 +605,17 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         buscadorArchivo.setFileFilter(filter);
         int respuesta=buscadorArchivo.showOpenDialog(this);
         if (respuesta==JFileChooser.APPROVE_OPTION){
-            Image imagen=new ImageIcon(buscadorArchivo.getSelectedFile().getAbsolutePath()).getImage();
+            ImageIcon imageIcon=new ImageIcon(buscadorArchivo.getSelectedFile().getAbsolutePath());
+            BufferedImage imagen=new BufferedImage(imageIcon.getIconWidth(), imageIcon.getIconHeight(),
+                BufferedImage.TYPE_INT_RGB);
+            Graphics g=imagen.createGraphics();
+            imageIcon.paintIcon(null, g, 0, 0);
+            g.dispose();
             if (imagen.getHeight(null)<=0 || imagen.getWidth(null)<=0){
                 myTask.getView().setChosenBackground(null);
             } else {
                 myTask.getView().setChosenBackground(imagen);
+                this.myTask.getGeneralControlPanel().getConvolutionControlPanel().convolateImage();
             }
         }
     }
@@ -760,12 +794,12 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         c.gridy=7;
         c.anchor=GridBagConstraints.SOUTH;
         c.fill=GridBagConstraints.HORIZONTAL;
-        c.insets=new Insets(5,10,0,10);
+        c.insets=new Insets(5,10,0,20);
         this.add(this.tablaColores.getTableHeader(),c);
         c.gridx=0;
         c.gridy=8;
         c.anchor=GridBagConstraints.NORTH;
-        c.insets=new Insets(0,10,0,10);
+        c.insets=new Insets(0,10,0,20);
         this.add(this.tablaColores,c);
     }
     
@@ -914,6 +948,7 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.myTask.getView().setRate(sliderFramesCanvas.getValue());
         this.myTask.getView().setRunning(true);
         this.myTask.getFire().setRunning(true);
+        this.myTask.getView().setStoped(false);
         Thread hiloView=new Thread(this.myTask.getView());
         Thread hiloFire=new Thread(this.myTask.getFire());
         hiloFire.start();
@@ -953,16 +988,14 @@ public class ControlPanel extends JPanel implements ActionListener, ChangeListen
         this.start.setEnabled(true);
         this.pause.setEnabled(true);
         this.stop.setEnabled(false);
+        this.myTask.getView().setStoped(true);
         this.myTask.getView().setRunning(true);
-        this.myTask.getFire().setRunning(true);
         Thread hiloView=new Thread(this.myTask.getView());
-        Thread hiloFire=new Thread(this.myTask.getFire());
-        hiloFire.start();
         hiloView.start();
         this.myTask.getFire().setTemperatureTo0();
         this.myTask.getFire().setRunning(false);
         try {
-            Thread.sleep(30);
+            Thread.sleep(100);
         } catch (InterruptedException ex) {
             System.out.println(ex.getMessage());
         }
