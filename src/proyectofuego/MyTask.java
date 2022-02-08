@@ -1,6 +1,7 @@
 package proyectofuego;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import javax.swing.*;
@@ -33,6 +34,8 @@ public class MyTask extends JFrame{
         } 
         MyTask tasca=new MyTask();
         tasca.createFire();
+        tasca.setTabedPaneSize();
+        tasca.fireControlPanel.initViewThread();
         
     }
     
@@ -104,7 +107,7 @@ public class MyTask extends JFrame{
         this.fireControlPanel.setMyTask(this);
         this.convolutionControlPanel = new ConvolutionControlPanel();
         this.convolutionControlPanel.setMyTask(this);
-        this.generalControlPanel=new GeneralControlPanel(this.fireControlPanel, this.convolutionControlPanel);
+        this.generalControlPanel=new GeneralControlPanel(this,this.fireControlPanel, this.convolutionControlPanel);
         this.convolutionFilter=new ConvolutionFilter(this.convolutionControlPanel.getInfoKernelValues());
         this.addPanels();
         this.setLocationRelativeTo(null);
@@ -115,5 +118,9 @@ public class MyTask extends JFrame{
         this.fire=new Flame(this.getView().getAmplada(),this.getView().getAltura(),Flame.TYPE_4BYTE_ABGR,this);
         fire.setPalette();
         this.view.setFire(fire);
+    }
+    
+    private void setTabedPaneSize(){
+        this.generalControlPanel.getTabbedPane().setMinimumSize(new Dimension(this.fireControlPanel.getWidth()+5,this.fireControlPanel.getHeight()));
     }
 }

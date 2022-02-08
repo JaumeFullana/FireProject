@@ -50,7 +50,6 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
     private JLabel labelFramesCanvas;
     private JLabel labelSparks;
     private JLabel labelCoolingPoints;
-    private JLabel labelFondo;
     private JLabel labelPonderacio;
     private JLabel labelDivisorPonderacio;
     private JLabel labelDesde;
@@ -85,7 +84,6 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
     private JButton botonGuardarPaleta;
     private JButton botonBorrarColores;
     private JButton botoActualitzar;
-    private JButton botoFondo;
     private JButton botonSeleccionarPaleta;
     private JButton botonBorrarPaleta;
 
@@ -129,22 +127,19 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         this.labelCoolingPoints=new JLabel("Cooling Points: ");
         this.labelCoolingPoints.setFont(new Font("Tahoma",Font.BOLD,16));
         this.labelCoolingPoints.setForeground(Color.white);
-        this.labelFondo=new JLabel("BACKGROUND:");
-        this.labelFondo.setFont(new Font("Tahoma",Font.BOLD,16));
-        this.labelFondo.setForeground(Color.white);
         this.labelPonderacio=new JLabel("HEAT PONDERATION:");
         this.labelPonderacio.setFont(new Font("Tahoma",Font.BOLD,16));
         this.labelPonderacio.setForeground(Color.white);
-        this.labelDivisorPonderacio=new JLabel("Divisor ponderacio:");
+        this.labelDivisorPonderacio=new JLabel("Ponderation divider:");
         this.labelDivisorPonderacio.setFont(new Font("Tahoma",Font.BOLD,14));
         this.labelDivisorPonderacio.setForeground(Color.white);
-        this.labelDesde=new JLabel("Desde");
+        this.labelDesde=new JLabel("  From");
         this.labelDesde.setFont(new Font("Tahoma",Font.BOLD,14));
         this.labelDesde.setForeground(Color.white);
-        this.labelHasta=new JLabel(" Hasta");
+        this.labelHasta=new JLabel("    To");
         this.labelHasta.setFont(new Font("Tahoma",Font.BOLD,14));
         this.labelHasta.setForeground(Color.white);
-        this.labelPorcentage=new JLabel("%   ");
+        this.labelPorcentage=new JLabel("%     ");
         this.labelPorcentage.setFont(new Font("Tahoma",Font.BOLD,14));
         this.labelPorcentage.setForeground(Color.white);
         
@@ -226,20 +221,18 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         this.start=new JButton("PLAY", new ImageIcon(this.getClass().getResource("Images\\play.png")));
         this.pause=new JButton("PAUSE", new ImageIcon(this.getClass().getResource("Images\\pause.png")));
         this.stop=new JButton("STOP", new ImageIcon(this.getClass().getResource("Images\\stop.png")));
-        this.botonAnadirColor=new JButton("AÑADIR COLOR");
-        this.botoActualitzar=new JButton("ACTUALITZAR VALORES");
-        this.botoFondo=new JButton("CAMBIAR FONDO");
-        this.botonGuardarPaleta=new JButton("GUARDAR PALETA");
-        this.botonBorrarColores=new JButton("BORRAR COLORES");
-        this.botonSeleccionarPaleta=new JButton("SELECCIONAR PALETA");
-        this.botonBorrarPaleta=new JButton("BORRAR PALETA");
+        this.botonAnadirColor=new JButton("ADD COLOR");
+        this.botoActualitzar=new JButton("UPDATE VALUES");
+        this.botonGuardarPaleta=new JButton("SAVE PALETTE");
+        this.botonBorrarColores=new JButton("DELETE COLORS");
+        this.botonSeleccionarPaleta=new JButton("SELECT PALETTE");
+        this.botonBorrarPaleta=new JButton("DELETE PALETTE");
         
         this.start.addActionListener(this);
         this.pause.addActionListener(this);
         this.stop.addActionListener(this);
         this.botonAnadirColor.addActionListener(this);
-        this.botoActualitzar.addActionListener(this);
-        this.botoFondo.addActionListener(this);
+        this.botoActualitzar.addActionListener(this);;
         this.botonGuardarPaleta.addActionListener(this);
         this.botonBorrarColores.addActionListener(this);
         this.botonSeleccionarPaleta.addActionListener(this);
@@ -291,15 +284,6 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         c.gridx=2;
         c.gridy=1;
         this.add(this.stop,c);
-        c.insets=new Insets(5,5,10,0);
-        c.gridx=0;
-        c.gridy=2;
-        this.add(this.labelFondo,c);
-        c.insets=new Insets(5,0,10,20);
-        c.gridx=1;
-        c.gridy=2;
-        c.gridwidth=2;
-        this.add(this.botoFondo,c);
         c.gridwidth=1;
         c.weighty=0.6;
         c.gridx=0;
@@ -538,11 +522,11 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
                 this.stop();
                 break;
 
-            case ("AÑADIR COLOR"):
+            case ("ADD COLOR"):
                 this.addColorTableRow();
                 break;
                 
-            case("GUARDAR PALETA"):
+            case("SAVE PALETTE"):
                 if (this.tablaColores.isEditing()){
                     JOptionPane.showMessageDialog(myTask,"You have to deselect the cell of the palette colors table","Warning Message",JOptionPane.WARNING_MESSAGE);
                 } else {
@@ -550,19 +534,19 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
                 }
                 break;
 
-            case("BORRAR COLORES"):
+            case("DELETE COLORS"):
                 this.deleteTableValues();
                 break;
               
-            case ("SELECCIONAR PALETA"):
+            case ("SELECT PALETTE"):
                 this.myTask.setFlamePalette(this.mapaPaletas.get(this.comboBoxPaletas.getSelectedItem().toString()));
                 break;
                 
-            case ("BORRAR PALETA"):
+            case ("DELETE PALETTE"):
                 this.deletePalette(this.comboBoxPaletas.getSelectedItem().toString());
                 break;
                 
-            case ("ACTUALITZAR VALORES"):
+            case ("UPDATE VALUES"):
                 if (this.tablaPonderacion.isEditing()){
                     JOptionPane.showMessageDialog(myTask,"You have to deselect the cell of the ponderation table","Warning Message",JOptionPane.WARNING_MESSAGE);
                 } else{
@@ -570,10 +554,6 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
                     this.addCoolingPointsValues();
                     this.addPonderationValues();
                 }
-                break;
-                
-            case ("CAMBIAR FONDO"):
-                this.addBackground();
                 break;
         }
     }
@@ -592,32 +572,6 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         this.myTask.getFire().setPondSouthEast(Double.parseDouble(this.tablaPonderacion.getValueAt(2, 2).toString()));
         
         this.myTask.getFire().setPondDivisor(Double.parseDouble(this.spinnerDivisorPonderacio.getValue().toString()));
-    }
-    
-    /**
-     * Metodo que añade el background del viewer. Si el archivo escogido no es un imagen
-     * o su tamaño es 0 o menor y por tanto no se ve se asignara valor null para que se 
-     * muestre la imagen por defecto, que es un fondo negro.
-     */
-    public void addBackground(){
-        JFileChooser buscadorArchivo = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "gif", "png", "bmp", "tif");
-        buscadorArchivo.setFileFilter(filter);
-        int respuesta=buscadorArchivo.showOpenDialog(this);
-        if (respuesta==JFileChooser.APPROVE_OPTION){
-            ImageIcon imageIcon=new ImageIcon(buscadorArchivo.getSelectedFile().getAbsolutePath());
-            BufferedImage imagen=new BufferedImage(imageIcon.getIconWidth(), imageIcon.getIconHeight(),
-                BufferedImage.TYPE_INT_RGB);
-            Graphics g=imagen.createGraphics();
-            imageIcon.paintIcon(null, g, 0, 0);
-            g.dispose();
-            if (imagen.getHeight(null)<=0 || imagen.getWidth(null)<=0){
-                myTask.getView().setChosenBackground(null);
-            } else {
-                myTask.getView().setChosenBackground(imagen);
-                this.myTask.getGeneralControlPanel().getConvolutionControlPanel().convolateImage();
-            }
-        }
     }
     
     /**
@@ -852,7 +806,6 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         this.start.setEnabled(true);
         this.pause.setEnabled(false);
         this.stop.setEnabled(true);
-        this.myTask.getView().setRunning(false);
         this.myTask.getFire().setRunning(false);
     }
     
@@ -891,11 +844,11 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         File file=new File("paletas.txt");
         try (BufferedWriter escritor = new BufferedWriter(new FileWriter(file,true))) {
             if (this.tablaColores.getRowCount()==1 && this.tablaColores.getValueAt(0, 1).toString().isBlank()){
-                throw new Exception("No se puede crear la paleta.\nNo se ha especificado ningun color");
+                throw new Exception("The palette can't be created.\nThere isn't any color specified");
             }
             boolean maxTemperatureSeted=false;
             String nombrePaleta = (String)JOptionPane.showInputDialog(
-                    this.myTask,"Escribe el nombre de la paleta:");        
+                    this.myTask,"Write the plaette name:");        
             escritor.write("#"+nombrePaleta);
             escritor.write("/"+0+","+new Color(0,0,0,0).getRGB());
             for (int i=0; i<this.tablaColores.getRowCount();i++){
@@ -915,7 +868,7 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         } catch (Exception ex){
-            if (ex.getMessage().equals("No se puede crear la paleta.\nNo se ha especificado ningun color")){
+            if (ex.getMessage().equals("The palette can't be created.\nThere isn't any color specified")){
                 JOptionPane.showMessageDialog(this.myTask, ex.getMessage());
             }
         }
@@ -942,17 +895,13 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         this.start.setEnabled(false);
         this.pause.setEnabled(true);
         this.stop.setEnabled(true);
+        this.myTask.getView().setStoped(false);
         this.addSparksValues();
         this.addCoolingPointsValues();
         this.myTask.getFire().setRate(sliderFramesFire.getValue());
-        this.myTask.getView().setRate(sliderFramesCanvas.getValue());
-        this.myTask.getView().setRunning(true);
         this.myTask.getFire().setRunning(true);
-        this.myTask.getView().setStoped(false);
-        Thread hiloView=new Thread(this.myTask.getView());
         Thread hiloFire=new Thread(this.myTask.getFire());
         hiloFire.start();
-        hiloView.start();
     }
     
     /**
@@ -988,17 +937,16 @@ public class FireControlPanel extends JPanel implements ActionListener, ChangeLi
         this.start.setEnabled(true);
         this.pause.setEnabled(true);
         this.stop.setEnabled(false);
-        this.myTask.getView().setStoped(true);
-        this.myTask.getView().setRunning(true);
-        Thread hiloView=new Thread(this.myTask.getView());
-        hiloView.start();
         this.myTask.getFire().setTemperatureTo0();
         this.myTask.getFire().setRunning(false);
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException ex) {
-            System.out.println(ex.getMessage());
-        }
-        this.myTask.getView().setRunning(false);
+        this.myTask.getView().setStoped(true);
     }
-}
+    
+    public void initViewThread(){
+        this.myTask.getView().setRate(sliderFramesCanvas.getValue());
+        this.myTask.getView().setRunning(true);
+        this.myTask.getView().setStoped(false);
+        Thread hiloView=new Thread(this.myTask.getView());
+        hiloView.start();
+    }
+}   

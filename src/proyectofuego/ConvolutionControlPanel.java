@@ -1,5 +1,6 @@
 package proyectofuego;
 
+import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -22,6 +23,8 @@ import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 /**
  *
@@ -29,13 +32,16 @@ import javax.swing.event.ChangeListener;
  */
 public class ConvolutionControlPanel extends JPanel implements ActionListener, ChangeListener{
     
-   private MyTask myTask;
+    private MyTask myTask;
+    
+    private BufferedImage convolutedImagePreview;
+    
+    private Canvas convulationPreview;
     
     private JLabel labelConvolutionPanel;
     private JLabel labelConvolutionKernel;
     private JLabel labelActivateConvolutionFire;
-    
-    private JCheckBox checkBoxConvolatePrincipalImage;
+    private JLabel labelConvolutionPreview;
     
     private JTable tableConvolutionKernel;
     
@@ -69,13 +75,17 @@ public class ConvolutionControlPanel extends JPanel implements ActionListener, C
         this.labelConvolutionPanel.setFont(new Font("Tahoma",Font.BOLD,20));
         this.labelConvolutionPanel.setForeground(Color.white);
         
-        this.labelConvolutionKernel=new JLabel("Convolution kernel: ");
+        this.labelConvolutionKernel=new JLabel("CONVOLUTION KERNEL: ");
         this.labelConvolutionKernel.setFont(new Font("Tahoma",Font.BOLD,20));
         this.labelConvolutionKernel.setForeground(Color.white);
         
         this.labelActivateConvolutionFire=new JLabel("Convolution Fire: ");
-        this.labelActivateConvolutionFire.setFont(new Font("Tahoma",Font.BOLD,18));
+        this.labelActivateConvolutionFire.setFont(new Font("Tahoma",Font.BOLD,16));
         this.labelActivateConvolutionFire.setForeground(Color.white);
+        
+        this.labelConvolutionPreview=new JLabel("CONVOLUTION IMAGE PREVIEW: ");
+        this.labelConvolutionPreview.setFont(new Font("Tahoma",Font.BOLD,20));
+        this.labelConvolutionPreview.setForeground(Color.white);
         
         this.buttonSetConvolution=new JButton("APPLY");
         this.buttonSobelVertical=new JButton("Sobel Y");
@@ -106,21 +116,6 @@ public class ConvolutionControlPanel extends JPanel implements ActionListener, C
         labelTable.put(1, labelActivated);
         this.sliderActivateConvolutionFire.setLabelTable(labelTable);
         this.sliderActivateConvolutionFire.setForeground(Color.white);
-        
-        
-        this.checkBoxConvolatePrincipalImage=new JCheckBox("Use convolated image as principal image");
-        this.checkBoxConvolatePrincipalImage.setFont(new Font("Tahoma",Font.BOLD,14));
-        this.checkBoxConvolatePrincipalImage.setForeground(Color.white);
-        this.checkBoxConvolatePrincipalImage.addItemListener(new ItemListener(){
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (checkBoxConvolatePrincipalImage.isSelected()){
-                    myTask.getView().setUsingConvulatedImage(true);
-                } else{
-                    myTask.getView().setUsingConvulatedImage(false);
-                }
-            }
-        });
 
         
         String [][] infoConvolutionKernel=new String[3][3];
@@ -136,14 +131,22 @@ public class ConvolutionControlPanel extends JPanel implements ActionListener, C
         String [] columnNamePonderacio={"","",""};
         this.tableConvolutionKernel=new JTable(infoConvolutionKernel, columnNamePonderacio);    
         
+        this.tableConvolutionKernel.getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                convulateChosenBackground();
+            }
+        });
+        
         GridBagConstraints c=new GridBagConstraints();
         c.weightx=0.5;
+        c.weighty=0;
         c.gridx=0;
         c.gridy=0;
         c.gridwidth=3;
         c.anchor=GridBagConstraints.WEST;
         c.fill=GridBagConstraints.NONE;
-        c.insets=new Insets(0,5,10,0);
+        c.insets=new Insets(10,5,10,0);
         this.add(this.labelConvolutionPanel,c);
         c.gridx=0;
         c.gridy=1;
@@ -212,9 +215,20 @@ public class ConvolutionControlPanel extends JPanel implements ActionListener, C
         this.add(this.sliderActivateConvolutionFire,c);
         c.gridx=0;
         c.gridy=6;
+        c.gridwidth=2;
         c.anchor=GridBagConstraints.WEST;
         c.insets=new Insets(10,10,5,0);
-        this.add(this.checkBoxConvolatePrincipalImage,c);
+        this.add(this.labelConvolutionPreview,c);
+        c.gridx=0;
+        c.gridy=7;
+        c.gridwidth=3;
+        c.weighty=1;
+        c.anchor=GridBagConstraints.WEST;
+        c.fill=GridBagConstraints.BOTH;
+        c.insets=new Insets(10,10,10,10);
+        convulationPreview=new Canvas();
+        convulationPreview.setBackground(Color.black);
+        this.add(convulationPreview,c);
     }
 
     @Override
@@ -263,7 +277,6 @@ public class ConvolutionControlPanel extends JPanel implements ActionListener, C
     public void convolateImage() throws HeadlessException {
         if (this.tableConvolutionKernel.isEditing()){
             JOptionPane.showMessageDialog(myTask,"You have to deselect the cell of the Convolution Kernel table","Warning Message",JOptionPane.WARNING_MESSAGE);
-            
         }
         else {
             this.myTask.getConvolutionFilter().setConvolutionKernel(this.getInfoKernelValues());
@@ -303,6 +316,20 @@ public class ConvolutionControlPanel extends JPanel implements ActionListener, C
         }
         
         return convolutionKernel;
+    }
+    
+    public void convulateChosenBackground(){
+        myTask.getConvolutionFilter().setConvolutionKernel(getInfoKernelValues());
+        if (myTask.getView().getChosenBackground()!=null){
+            convolutedImagePreview=myTask.getConvolutionFilter().applyConvolutionFilter(myTask.getView().getChosenBackground());
+            paintPreviewConvolution();
+        }
+    }
+
+    public void paintPreviewConvolution() {
+        Graphics g=convulationPreview.getGraphics();
+        g.drawImage(convolutedImagePreview, 0, 0, convulationPreview.getWidth(), convulationPreview.getHeight(), null);
+        g.dispose();
     }
 
     @Override

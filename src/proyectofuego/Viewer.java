@@ -2,6 +2,9 @@ package proyectofuego;
 
 import java.awt.Canvas;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
@@ -13,7 +16,7 @@ import javax.swing.JFrame;
  */
 public class Viewer extends Canvas implements Runnable{
     
-    private JFrame frame;
+    private MyTask myTask;
     private Flame fire;
     private boolean running;
     private int fps;
@@ -21,7 +24,8 @@ public class Viewer extends Canvas implements Runnable{
     private BufferedImage defaultBackground;
     private BufferedImage chosenBackground;
     private BufferedImage convolutedImage;
-    boolean usingConvulatedImage;
+    private boolean usingConvulatedImage;
+    private boolean usingFireBackground;
     private int altura;
     private int amplada;
     private boolean stoped;
@@ -29,13 +33,33 @@ public class Viewer extends Canvas implements Runnable{
     public Viewer() {
     }
 
-    public Viewer(JFrame frame) {
-        this.frame = frame;
+    public Viewer(MyTask myTask) {
+        this.myTask = myTask;
         this.getActualSize();
         ImageIcon iconBackground=new ImageIcon(this.getClass().getResource("Images\\fondoNegro.png"));
         this.defaultBackground=new BufferedImage(iconBackground.getIconWidth(),
                 iconBackground.getIconHeight(),BufferedImage.TYPE_INT_RGB);
         this.usingConvulatedImage=false;
+        this.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (e.getY()<(int)(getHeight()*0.25)){
+                    if (e.getX()<(int)(getWidth()*0.33)){
+                        usingConvulatedImage=false;
+                        usingFireBackground=false;
+                    }
+                    else if (e.getX()>(int)(getWidth()*0.66)){
+                        usingConvulatedImage=false;
+                        usingFireBackground=true;
+                    }
+                    else {
+                        usingConvulatedImage=true;
+                        usingFireBackground=false;
+                    }
+                }
+            }
+            
+        });
     }
 
     public int getAltura() {
@@ -51,7 +75,7 @@ public class Viewer extends Canvas implements Runnable{
     }
     
     public JFrame getFrame() {
-        return frame;
+        return myTask;
     }
 
     public BufferedImage getChosenBackground() {
@@ -60,6 +84,10 @@ public class Viewer extends Canvas implements Runnable{
 
     public BufferedImage getConvolutedImage() {
         return convolutedImage;
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 
     public void setConvolutedImage(BufferedImage convolutedImage) {
@@ -97,6 +125,9 @@ public class Viewer extends Canvas implements Runnable{
         while(running){
             if(this.fire.getMapaTemperatura()!=null){
                 this.paintFire();
+                if(this.myTask.getGeneralControlPanel().getTabbedPane().getSelectedIndex()==1){
+                    this.myTask.getGeneralControlPanel().getConvolutionControlPanel().paintPreviewConvolution();
+                }
             }
             try {
                 Thread.sleep(skip_ticks);
@@ -107,8 +138,8 @@ public class Viewer extends Canvas implements Runnable{
     }    
     
     /**
-     * Metodo que coge la altura i el amplio del frame principal i lo asigna como
-     * tamaño a las matrices del mapaTemperatura.
+     * Metodo que coge la altura i el amplio del myTask principal i lo asigna como
+ tamaño a las matrices del mapaTemperatura.
      */
     private void getActualSize(){
         altura=this.getFrame().getHeight();
@@ -120,13 +151,16 @@ public class Viewer extends Canvas implements Runnable{
      * para evitar el flickering. Primero pinta en el fondo la imagen seleccionada, si
      * no hay ninguna pinta la default, que es un fondo negro, y luego pinta el fuego.
      */
-    private void paintFire(){
+    public void paintFire(){
         BufferStrategy bs;
         bs=this.getBufferStrategy();
         if(bs==null){
             System.out.println("ERROR, kgd");
             this.createBufferStrategy(3);
-        }else if(this.getParent()==null){
+            bs=this.getBufferStrategy();
+        }
+        
+        if(this.getParent()==null){
             System.out.println("ERROR, kgd 2");
         } 
         else {
@@ -138,6 +172,9 @@ public class Viewer extends Canvas implements Runnable{
             else {
                 if (this.convolutedImage!=null && this.usingConvulatedImage){
                     g.drawImage(this.convolutedImage, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
+                }
+                else if (this.usingFireBackground){
+                    g.drawImage(this.defaultBackground, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
                 }
                 else {
                     g.drawImage(this.chosenBackground, 0,(int)(this.getHeight()*0.25), this.getWidth(), (int)(this.getHeight()*0.75), null);
