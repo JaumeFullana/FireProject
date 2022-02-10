@@ -16,10 +16,18 @@ public class TargetColor {
         this.color = color;
     }
     
+    /**
+     * Normal getter.
+     * @return color
+     */
     public Color getColor() {
         return color;
     }
 
+    /**
+     * Normal getter.
+     * @return position
+     */
     public int getPosition() {
         return position;
     }

@@ -13,20 +13,10 @@ public class Flame extends BufferedImage implements Runnable{
     
     private MyTask myTask;
     private int [][] mapaTemperatura;
-    private int [][] mapaTemperatura2;
-    
-    private double pondNorthWest;
-    private double pondNorthCenter;
-    private double pondNorthEast;
-    private double pondCenterWest;
-    private double pondCenterCenter;
-    private double pondCenterEast;
-    private double pondSouthWest;
-    private double pondSouthCenter;
-    private double pondSouthEast;
+    private int [][] mapaTemperatura2; 
+    private double [][] ponderationMatrix;
     
     private double pondDivisor;
-    
     private int coolingTemp;
     private boolean running;
     private boolean sparks2Activated;
@@ -48,127 +38,166 @@ public class Flame extends BufferedImage implements Runnable{
         this.myTask=myTask;
         this.coolingTemp=12;
         
-        this.pondNorthCenter=0.1;
-        this.pondNorthEast=0;
-        this.pondNorthWest=0;
-        this.pondCenterCenter=0.5;
-        this.pondCenterEast=0.8;
-        this.pondCenterWest=0.2;
-        this.pondSouthCenter=1.8;
-        this.pondSouthEast=1.5;
-        this.pondSouthWest=2.1;
+        double [][] matrix={{0,0.1,0},{0.2,0.5,0.8},{2.1,1.8,1.5}};
+        this.ponderationMatrix=matrix;
         
         this.pondDivisor=695;
         this.convolateFire=false;
     }
     
-    
-    
+    /**
+     * Getter normal
+     * @return mapaTemperatura
+     */
     public int[][] getMapaTemperatura() {
         return mapaTemperatura;
     }
-
+    
+    /**
+     * Setter normal
+     * @param convolateFire  
+     */
     public void setConvolateFire(boolean convolateFire) {
         this.convolateFire = convolateFire;
     }
     
+    /**
+     * Setter normal
+     * @param coolingFromCol 
+     */
     public void setCoolingFromCol(int coolingFromCol) {
         this.coolingFromCol = coolingFromCol;
     }
-
+    
+    /**
+     * Setter normal
+     * @param coolingPercentage 
+     */
     public void setCoolingPercentage(int coolingPercentage) {
         this.coolingPercentage = coolingPercentage;
     }
     
+    /**
+     * Setter normal
+     * @param coolingTemp 
+     */
     public void setCoolingTemp(int coolingTemp) {
         this.coolingTemp = coolingTemp;
     }
     
+    /**
+     * Setter normal
+     * @param coolingToCol 
+     */
     public void setCoolingToCol(int coolingToCol) {
         this.coolingToCol = coolingToCol;
     }
     
+    /**
+     * Setter normal
+     * @param mapaTemperatura 
+     */
     public void setMapaTemperatura(int[][] mapaTemperatura) {
         this.mapaTemperatura = mapaTemperatura;
     }
-
+    
+    /**
+     * Setter normal
+     * @param mapaTemperatura2 
+     */
     public void setMapaTemperatura2(int[][] mapaTemperatura2) {
         this.mapaTemperatura2 = mapaTemperatura2;
     }
     
-    public void setPondCenterCenter(double pondCenterCenter) {
-        this.pondCenterCenter = pondCenterCenter;
-    }
-
-    public void setPondCenterEast(double pondCenterEast) {
-        this.pondCenterEast = pondCenterEast;
-    }
-    
-    public void setPondCenterWest(double pondCenterWest) {
-        this.pondCenterWest = pondCenterWest;
-    }
-
+    /**
+     * Setter normal
+     * @param pondDivisor 
+     */
     public void setPondDivisor(double pondDivisor) {
         this.pondDivisor = pondDivisor;
     }
     
-    public void setPondNorthCenter(double pondNorthCenter) {
-        this.pondNorthCenter = pondNorthCenter;
-    }
-
-    public void setPondNorthEast(double pondNorthEast) {
-        this.pondNorthEast = pondNorthEast;
-    }
-
-    public void setPondNorthWest(double pondNorthWest) {
-        this.pondNorthWest = pondNorthWest;
+    /**
+     * Setter normal
+     * @param ponderationMatrix 
+     */
+    public void setPonderationMatrix(double[][] ponderationMatrix) {
+        this.ponderationMatrix = ponderationMatrix;
     }
     
-    public void setPondSouthCenter(double pondSouthCenter) {
-        this.pondSouthCenter = pondSouthCenter;
-    }
-
-    public void setPondSouthEast(double pondSouthEast) {
-        this.pondSouthEast = pondSouthEast;
-    }
-
-    public void setPondSouthWest(double pondSouthWest) {
-        this.pondSouthWest = pondSouthWest;
-    }
-    
+    /**
+     * Setter normal
+     * @param running 
+     */
     public void setRunning(boolean running) {
         this.running = running;
     }
     
+    /**
+     * Setter normal
+     * @param sparksFromCol 
+     */
     public void setSparksFromCol(int sparksFromCol) {
         this.sparksFromCol = sparksFromCol;
     }
     
+    /**
+     * Setter normal
+     * @param sparksFromCol2 
+     */
     public void setSparksFromCol2(int sparksFromCol2) {
         this.sparksFromCol2 = sparksFromCol2;
     }
     
+    /**
+     * Setter normal
+     * @param sparksPercentage 
+     */
     public void setSparksPercentage(int sparksPercentage) {
         this.sparksPercentage = sparksPercentage;
     }
     
+    /**
+     * Setter normal
+     * @param sparksPercentage2 
+     */
     public void setSparksPercentage2(int sparksPercentage2) {
         this.sparksPercentage2 = sparksPercentage2;
     }
     
+    /**
+     * Setter normal
+     * @param sparksToCol 
+     */
     public void setSparksToCol(int sparksToCol) {
         this.sparksToCol = sparksToCol;
     }
     
+    /**
+     * Setter normal
+     * @param sparksToCol2 
+     */
     public void setSparksToCol2(int sparksToCol2) {
         this.sparksToCol2 = sparksToCol2;
     }
-
+    
+    /**
+     * Setter normal
+     * @param sparks2Activated 
+     */
     public void setSparks2Activated(boolean sparks2Activated) {
         this.sparks2Activated = sparks2Activated;
     }
     
-    public void createCoolingPoint(int percentage, Random r, int i, int j) {
+    /**
+     * Hay posibilidades de que añada un coolingPoint, pone temperatura a 0, en 
+     * un punto del mapa de temperatura.
+     * @param percentage porcentage de que se ponga el cooling point
+     * @param r Random
+     * @param i posicion vertical donde se pondra el cooling point
+     * @param j posicion horizontal donde se pondra el cooling point
+     */
+    private void createCoolingPoint(int percentage, Random r, int i, int j) {
         if (percentage>=r.nextInt(10)+1){
             this.mapaTemperatura2[i][j]=0;
         }
@@ -208,8 +237,15 @@ public class Flame extends BufferedImage implements Runnable{
         }
     }
     
-    
-    public void CreateSpark(int percentage, Random r, int i, int j) {
+    /**
+     * Hay posibilidades de que añada un spark, pone temperatura a 255, en 
+     * un punto del mapa de temperatura.
+     * @param percentage porcentage de que se ponga la spark
+     * @param r Random
+     * @param i posicion vertical donde se pondra la spark
+     * @param j posicion horizontal donde se pondra la spark
+     */
+    private void CreateSpark(int percentage, Random r, int i, int j) {
         if (percentage>=r.nextInt(10)+1){
             this.mapaTemperatura2[i][j]=255;
         }
@@ -235,37 +271,6 @@ public class Flame extends BufferedImage implements Runnable{
     }
     
     /**
-     * Metodo que hace una media de la temperatura de un indice concreto del 
-     * mapaTemperatura con su temperatura y la temperatura de sus indices vecinos.
-     * En la media hay algunas modificaciones.
-     * @param y int indice de la fila de la matriz mapaTemperatura
-     * @param x int indice de la columna de la matriz mapaTemperatura
-     * @return int temperatura media resultante del calculo
-     */
-    private int temperatureEvolve(int y, int x){
-        /*int temperaturaMedia=(int) (((this.getMapaTemperatura()[y-1][x]*0.1
-                +this.getMapaTemperatura()[y][x]*0.5
-                +this.getMapaTemperatura()[y][x-1]*0.5
-                +this.getMapaTemperatura()[y][x+1]*0.5
-                +this.getMapaTemperatura()[y+1][x+1]*1.8
-                +this.getMapaTemperatura()[y+1][x-1]*1.8
-                +this.getMapaTemperatura()[y+1][x]*1.8)/6.95)-coolingTemp/10);
-        */
-        
-        int temperaturaMedia=(int) (((this.getMapaTemperatura()[y-1][x]*pondNorthCenter
-                +this.getMapaTemperatura()[y-1][x+1]*pondNorthEast
-                +this.getMapaTemperatura()[y-1][x-1]*pondNorthWest
-                +this.getMapaTemperatura()[y][x]*pondCenterCenter
-                +this.getMapaTemperatura()[y][x+1]*pondCenterEast
-                +this.getMapaTemperatura()[y][x-1]*pondCenterWest
-                +this.getMapaTemperatura()[y+1][x]*pondSouthCenter
-                +this.getMapaTemperatura()[y+1][x+1]*pondSouthEast
-                +this.getMapaTemperatura()[y+1][x-1]*pondSouthWest)/(pondDivisor/100))-coolingTemp/10);
-        
-        return temperaturaMedia;
-    }
-    
-    /**
      * Metodo en el que se guarda la logica de la evolucion de la llama. Se van 
      * creando puntos calientes y frios, llamando a los metodos createSparks y 
      * createCool, segun los valores asignados por el panel de control. Luego se
@@ -276,10 +281,9 @@ public class Flame extends BufferedImage implements Runnable{
      * el bucle llama al metodo createFlameImage y asigna los valores del 
      * mapaTemperatura2 al mapaTemperatura.
      */
-    public void flameEvolve(){
+    private void flameEvolve(){
         if (convolateFire){
-            this.searchSparkPositions();
-            //this.searchCoolingPositions();
+            this.searchSparksPositions();
         }
         else {
             this.createSparks(this.sparksFromCol,this.sparksToCol,this.mapaTemperatura2.length-1,this.sparksPercentage);
@@ -288,8 +292,6 @@ public class Flame extends BufferedImage implements Runnable{
             }
         }
         this.createCoolingPoints(this.coolingFromCol,this.coolingToCol,this.mapaTemperatura2.length-1,this.coolingPercentage);
-        //for (int i=1; i<this.getMapaTemperatura().length-1;i++){
-            //for (int j=1; j<this.getMapaTemperatura()[i].length-1;j++){
         for (int i=this.getMapaTemperatura().length-2; i>0;i--){
             for (int j=this.getMapaTemperatura()[i].length-2; j>0;j--){
                 int temperatura=this.temperatureEvolve(i, j);
@@ -299,13 +301,47 @@ public class Flame extends BufferedImage implements Runnable{
                 else if (temperatura<0){
                     temperatura=0;
                 }
-                //Aqui esta es problema
-                //this.mapaTemperatura2[i-1][j]=temperatura;
                 this.mapaTemperatura2[i][j]=temperatura;
             }
         }
         this.createFlameImage();
         this.setMapaTemperatura(this.mapaTemperatura2);
+    }
+    
+    /**
+     * Busca la posicion en la que colocar las sparks dependiendo de la luminosidad 
+     * que hay en ese pixel.
+     */
+    private void searchSparksPositions(){
+        Random r=new Random();
+        for (int i=this.myTask.getViewer().getConvolutedImage().getHeight()-2; i>0;i--){
+            for (int j=this.myTask.getViewer().getConvolutedImage().getWidth()-2; j>0;j--){
+                int pixelColor=this.myTask.getViewer().getConvolutedImage().getRGB(j, i);
+                int lum = (77*((pixelColor>>16)&255) + 150*((pixelColor>>8)&255) + 29*((pixelColor)&255))>>8;
+                if (lum>20){
+                    this.CreateSpark(sparksPercentage, r, i, j);
+                    this.createCoolingPoint(coolingPercentage, r, i, j);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Metodo que hace una media de la temperatura de un indice concreto del 
+     * mapaTemperatura con su temperatura y la temperatura de sus indices vecinos.
+     * En la media hay algunas modificaciones.
+     * @param y int indice de la fila de la matriz mapaTemperatura
+     * @param x int indice de la columna de la matriz mapaTemperatura
+     * @return int temperatura media resultante del calculo
+     */
+    private int temperatureEvolve(int y, int x){
+        double sumTemperatura=0;
+        for (int i=-1;i<2;i++){
+            for (int j=-1;j<2;j++){
+                sumTemperatura+=this.getMapaTemperatura()[y+(i)][x+(j)]*this.ponderationMatrix[i+1][j+1];
+            }
+        }
+        return (int)(((sumTemperatura)/(pondDivisor/100))-coolingTemp/10);
     }
     
     /**
@@ -329,26 +365,11 @@ public class Flame extends BufferedImage implements Runnable{
         }
     }
     
-    public void searchSparkPositions(){
-        Random r=new Random();
-        for (int i=this.myTask.getView().getConvolutedImage().getHeight()-2; i>0;i--){
-            for (int j=this.myTask.getView().getConvolutedImage().getWidth()-2; j>0;j--){
-                int pixelColor=this.myTask.getView().getConvolutedImage().getRGB(j, i);
-                int lum = (77*((pixelColor>>16)&255) + 150*((pixelColor>>8)&255) + 29*((pixelColor)&255))>>8;
-                if (lum>20){
-                    this.CreateSpark(sparksPercentage, r, i, j);
-                    this.createCoolingPoint(coolingPercentage, r, i, j);
-                }
-            }
-        }
-    }
-    
     /**
      * Metodo que asigna una paleta de colores con colores parecidos a los de un
      * fuego real
      */
     public void setPalette(){
-        //fe if que cuigui valors, sino aixo
         FlamePalette palette=new FlamePalette();
         palette.addTargetColor(new TargetColor(0,new Color(0,0,0,0)));
         palette.addTargetColor(new TargetColor(30,new Color(255,0,0,100)));

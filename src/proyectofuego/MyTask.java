@@ -12,18 +12,13 @@ import javax.swing.*;
  */
 public class MyTask extends JFrame{
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args){
-        
 
+    public static void main(String[] args){
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     javax.swing.UIManager.put("nimbusBase", new Color(0,0,0));
-                    //javax.swing.UIManager.put("nimbusBlueGrey", new Color(255,190,0));
                     javax.swing.UIManager.put("control", new Color(0,0,0));
                     javax.swing.UIManager.put("OptionPane.messageForeground", Color.white);
                     break;
@@ -36,46 +31,67 @@ public class MyTask extends JFrame{
         tasca.createFire();
         tasca.setTabedPaneSize();
         tasca.fireControlPanel.initViewThread();
-        
     }
     
     private FireControlPanel fireControlPanel;
     private ConvolutionControlPanel convolutionControlPanel;
     private GeneralControlPanel generalControlPanel;
-    private Viewer view;
+    private Viewer viewer;
     private FlamePalette flamePalette;
-    private Flame fire;
+    private Flame flame;
     private ConvolutionFilter convolutionFilter;
 
     public MyTask() {
         initComponents();
     }
-
+    
+    /**
+     * Normal getter.
+     * @return convolutionFilter
+     */
     public ConvolutionFilter getConvolutionFilter() {
         return convolutionFilter;
     }
 
-    public Flame getFire() {
-        return fire;
+    /**
+     * Normal getter.
+     * @return flame
+     */
+    public Flame getFlame() {
+        return flame;
     }
     
+    /**
+     * Normal getter.
+     * @return flamePalette
+     */
     public FlamePalette getFlamePalette() {
         return flamePalette;
     }
 
+    /**
+     * Normal getter.
+     * @return generalControlPanel
+     */
     public GeneralControlPanel getGeneralControlPanel() {
         return generalControlPanel;
     }
     
-    public Viewer getView() {
-        return view;
+    /**
+     * Normal getter.
+     * @return viewer
+     */
+    public Viewer getViewer() {
+        return viewer;
     }
 
+    /**
+     * Normal Setter
+     * @param flamePalette 
+     */
     public void setFlamePalette(FlamePalette flamePalette) {
         this.flamePalette = flamePalette;
     }
-    
-    
     
     /**
      * Metodo que asigna al JFrame el layout GridBagLayout y añade el panel de control
@@ -91,8 +107,17 @@ public class MyTask extends JFrame{
         this.add(this.generalControlPanel,c);
         c.weightx=0.999;
         c.gridx=1;
-        this.add(this.view,c);
+        this.add(this.viewer,c);
     }
+    
+    /**
+     * Inicializa la varaible flame, le añade la paleta y añade el flame al viewer.
+     */
+    private void createFire(){
+        this.flame=new Flame(this.getViewer().getAnchura(),this.getViewer().getAltura(),Flame.TYPE_4BYTE_ABGR,this);
+        flame.setPalette();
+        this.viewer.setFlame(flame);
+    }    
     
     /**
      * Metodo que assigna todos los valores que necesita el JFrame. Aqui dentro
@@ -102,7 +127,7 @@ public class MyTask extends JFrame{
         this.setSize(800,800);
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.view=new Viewer(this);
+        this.viewer=new Viewer(this);
         this.fireControlPanel=new FireControlPanel();
         this.fireControlPanel.setMyTask(this);
         this.convolutionControlPanel = new ConvolutionControlPanel();
@@ -114,12 +139,9 @@ public class MyTask extends JFrame{
         this.setVisible(true);
     }
     
-    private void createFire(){
-        this.fire=new Flame(this.getView().getAmplada(),this.getView().getAltura(),Flame.TYPE_4BYTE_ABGR,this);
-        fire.setPalette();
-        this.view.setFire(fire);
-    }
-    
+    /**
+     * Da un tamaño minimo al TabbedPane del generalControlPanel
+     */
     private void setTabedPaneSize(){
         this.generalControlPanel.getTabbedPane().setMinimumSize(new Dimension(this.fireControlPanel.getWidth()+5,this.fireControlPanel.getHeight()));
     }

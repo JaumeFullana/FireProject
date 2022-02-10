@@ -1,15 +1,9 @@
 package proyectofuego;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import javax.swing.JPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -17,32 +11,19 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
- * @author PC
+ * @author Jaume
  */
 public class GeneralControlPanel extends JPanel implements ActionListener, ChangeListener{
     
     private FireControlPanel fireControlPanel;
     private ConvolutionControlPanel convolutionControlPanel;
     private JTabbedPane tabbedPane;
-    private JScrollPane scrollPane;
     private MyTask myTask;
     
     private JLabel labelApp;
     private JLabel labelFondo;
     private JButton botoFondo;
-
-    public FireControlPanel getFireControlPanel() {
-        return fireControlPanel;
-    }
-
-    public ConvolutionControlPanel getConvolutionControlPanel() {
-        return convolutionControlPanel;
-    }
-
-    public JTabbedPane getTabbedPane() {
-        return tabbedPane;
-    }
-
+    
     public GeneralControlPanel(MyTask myTask, FireControlPanel fireControlPanel, ConvolutionControlPanel convolutionControlPanel) {
         this.myTask = myTask;
         this.fireControlPanel = fireControlPanel;
@@ -50,69 +31,36 @@ public class GeneralControlPanel extends JPanel implements ActionListener, Chang
         initComponents();
     }
     
-    public void initComponents(){
-        
-        this.tabbedPane=new JTabbedPane();
-        
-        this.labelApp=new JLabel("FIRE IMAGE EDITOR");
-        this.labelApp.setFont(new Font("Tahoma",Font.BOLD,24));
-        this.labelApp.setForeground(Color.white);
-        
-        this.labelFondo=new JLabel("BACKGROUND:");
-        this.labelFondo.setFont(new Font("Tahoma",Font.BOLD,16));
-        this.labelFondo.setForeground(Color.white);
-        
-        this.botoFondo=new JButton("SELECT BACKGROUND");
-        this.botoFondo.addActionListener(this);
-        
-        this.setLayout(new GridBagLayout());
-        
-        GridBagConstraints c=new GridBagConstraints();
-        c.insets=new Insets(5,5,10,0);
-        c.gridx=0;
-        c.gridy=0;
-        c.gridwidth=2;
-        c.anchor=GridBagConstraints.WEST;
-        this.add(this.labelApp,c);
-        c.insets=new Insets(5,5,10,20);
-        c.gridx=0;
-        c.gridy=1;
-        c.gridwidth=1;
-        this.add(this.labelFondo,c);
-        c.insets=new Insets(5,0,10,0);
-        c.ipadx=20;
-        c.gridx=1;
-        c.gridy=1;
-        c.fill=GridBagConstraints.BOTH; 
-        c.weighty=0.5;
-        this.add(this.botoFondo,c);
-        c.weightx=1;
-        c.weighty=1;
-        c.gridx=0;
-        c.gridy=2;
-        c.gridwidth=2;        
-        JScrollPane scrollPane=new JScrollPane(this.fireControlPanel);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        this.tabbedPane.addTab("Fire Control Panel", scrollPane);
-        this.tabbedPane.addTab("Convolution Control Panel", this.convolutionControlPanel);
-        this.add(this.tabbedPane,c);
-        
-        this.tabbedPane.addChangeListener(this);
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equals("SELECT BACKGROUND")){
-            this.addBackground();
-        }
+    /**
+     * Normal getter.
+     * @return fireControlPanel
+     */
+    public FireControlPanel getFireControlPanel() {
+        return fireControlPanel;
     }
     
-        /**
+    /**
+     * Normal getter.
+     * @return convolutionControlPanel
+     */
+    public ConvolutionControlPanel getConvolutionControlPanel() {
+        return convolutionControlPanel;
+    }
+    
+    /**
+     * NormalGetter
+     * @return tabbedPane
+     */
+    public JTabbedPane getTabbedPane() {
+        return tabbedPane;
+    }
+    
+    /**
      * Metodo que añade el background del viewer. Si el archivo escogido no es un imagen
      * o su tamaño es 0 o menor y por tanto no se ve se asignara valor null para que se 
      * muestre la imagen por defecto, que es un fondo negro.
      */
-    public void addBackground(){
+    private void addBackground(){
         JFileChooser buscadorArchivo = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "gif", "png", "bmp", "tif");
         buscadorArchivo.setFileFilter(filter);
@@ -125,21 +73,100 @@ public class GeneralControlPanel extends JPanel implements ActionListener, Chang
             imageIcon.paintIcon(null, g, 0, 0);
             g.dispose();
             if (imagen.getHeight(null)<=0 || imagen.getWidth(null)<=0){
-                myTask.getView().setChosenBackground(null);
+                myTask.getViewer().setChosenBackground(null);
             } else {
-                myTask.getView().setChosenBackground(imagen);
-                this.getConvolutionControlPanel().convolateImage();
+                myTask.getViewer().setChosenBackground(imagen);
+                this.convolutionControlPanel.convolateImage();
                 if(this.tabbedPane.getSelectedIndex()==1){
-                    this.convolutionControlPanel.convulateChosenBackground();
+                    this.convolutionControlPanel.convolateChosenBackground();
                 }
             }
         }
-    }
+    }    
+    
+    /**
+     * Inicializa los componentes de este JPanel y los posiciona.
+     */
+    private void initComponents(){
+        this.tabbedPane=new JTabbedPane();
+        JScrollPane scrollPane=new JScrollPane(this.fireControlPanel);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        this.tabbedPane.addTab("Fire Control Panel", scrollPane);
+        this.tabbedPane.addTab("Convolution Control Panel", this.convolutionControlPanel);     
+        this.tabbedPane.addChangeListener(this);
+        
+        this.labelApp=new JLabel("FIRE IMAGE EDITOR");
+        this.labelApp.setFont(new Font("Tahoma",Font.BOLD,24));
+        this.labelApp.setForeground(Color.white);
+        
+        this.labelFondo=new JLabel("BACKGROUND:");
+        this.labelFondo.setFont(new Font("Tahoma",Font.BOLD,16));
+        this.labelFondo.setForeground(Color.white);
+        
+        this.botoFondo=new JButton("SELECT BACKGROUND");
+        this.botoFondo.addActionListener(this);
 
+        this.setLayout(new GridBagLayout());
+        
+        GridBagConstraints c=new GridBagConstraints();
+        this.positionComponent(0, 0, 2, 0, 0, GridBagConstraints.WEST, 
+            GridBagConstraints.NONE, new Insets(5,5,10,0), c, this.labelApp);
+        this.positionComponent(0, 1, 1, 0, 0, GridBagConstraints.WEST, 
+            GridBagConstraints.NONE, new Insets(5,5,10,20), c, this.labelFondo);
+        c.ipadx=20;
+        this.positionComponent(1, 1, 1, 0, 0.5, GridBagConstraints.WEST, 
+            GridBagConstraints.BOTH, new Insets(5,0,10,0), c, this.botoFondo);
+        this.positionComponent(0, 2, 2, 1, 1, GridBagConstraints.WEST, 
+            GridBagConstraints.BOTH, new Insets(5,0,10,0), c, this.tabbedPane);
+    }
+    
+    /**
+     * Posiciona el componente recivido en este JPanel. La posicions y todos los 
+     * paramteros son recibido a traves de los parametros del metodo.
+     * @param gridx posicion horizontal del componente en el grid
+     * @param gridy posicion vertical del componente en el grid
+     * @param gridwidth celdas del grid que el componente va a ocupar
+     * @param weightx peso horizontal del componente
+     * @param weighty peos vertical del componente
+     * @param anchor donde posicionar el componente en la celda
+     * @param fill como el componente rellena la celda
+     * @param insets margenes del componente
+     * @param c GridBagConstraint donde los parametros son especificados
+     * @param component componente a posicionar
+     */
+    private void positionComponent(int gridx, int gridy, int gridwidth, double weightx,
+            double weighty, int anchor, int fill, Insets insets, GridBagConstraints c, 
+            Component component){ 
+        c.gridx=gridx;
+        c.gridy=gridy;
+        c.gridwidth=gridwidth;
+        c.weightx=weightx;
+        c.weighty=weighty;
+        c.anchor=anchor;
+        c.fill=fill;
+        c.insets=insets;
+        this.add(component,c);
+    }
+    
+    /**
+     * Metodo implementado de una interfaz.
+     * @param e 
+     */
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("SELECT BACKGROUND")){
+            this.addBackground();
+        }
+    }
+    
+    /**
+     * Metodo implementado de una interfaz.
+     * @param e 
+     */
     @Override
     public void stateChanged(ChangeEvent e) {
         if(this.tabbedPane.getSelectedIndex()==1){
-            this.convolutionControlPanel.convulateChosenBackground();
+            this.convolutionControlPanel.convolateChosenBackground();
         }
     }
 }
